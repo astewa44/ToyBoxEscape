@@ -1,9 +1,9 @@
 /*
-!.gitignore
-!.gitmodules
+!.git*
 !*.txt
-!*.md
+!*.adoc
+!*.html
 !src
-!ginseng
+!test
 !data
-*.swp
+!cmake
