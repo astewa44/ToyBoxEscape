@@ -3,6 +3,7 @@
 //
 
 #include "MainMenu.hpp"
+#include "PhysicsSandbox.hpp"
 
 #include <iostream>
 #include <cstdio>
@@ -33,6 +34,7 @@ MainMenu::MainMenu(Engine *engine) : engine(engine) {
         throw "Couldn't find 'data/OpenSans-Regular.ttf'";
 
     items.emplace_back(make_pair("Blue Square", maker<BlueSquare>(engine)));
+    items.emplace_back(make_pair("Physics Sandbox", maker<PhysicsSandbox>(engine)));
 }
 
 bool MainMenu::haltsUpdate() {
