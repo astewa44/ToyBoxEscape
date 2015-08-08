@@ -60,7 +60,7 @@ void GameStateManager::draw()
 {
     auto findStart = [&]
     {
-        for (auto riter = rbegin(states), eriter = rend(states); riter != eriter; ++riter)
+        for (auto riter = std::rbegin(states), eriter = std::rend(states); riter != eriter; ++riter)
         {
 			auto iter = next(riter).base();
             auto halts = call_haltsDraw(*iter);

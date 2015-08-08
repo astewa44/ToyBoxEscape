@@ -1,4 +1,4 @@
 [submodule "ginseng"]
 	path = ginseng
-	url = https://github.com/dbralir/ginseng
+	url = https://github.com/dbralir/ginseng.git
 	branch = master
