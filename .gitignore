@@ -3,6 +3,7 @@
 !*.txt
 !*.adoc
 !*.html
+*.swp
 !src
 !test
 !data
