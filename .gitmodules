@@ -2,3 +2,6 @@
 	path = ginseng
 	url = https://github.com/dbralir/ginseng.git
 	branch = master
+[submodule "raspberry"]
+	path = raspberry
+	url = https://github.com/dbralir/raspberry
