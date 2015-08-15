@@ -3,6 +3,7 @@
 //
 
 #include "PhysicsSandbox.hpp"
+#include "Util.hpp"
 
 #include <iostream>
 
@@ -24,7 +25,7 @@ PhysicsSandbox::PhysicsSandbox(Engine *engine) : engine(engine) {
     minorY.setSize(sf::Vector2f(50, 2));
     minorY.setFillColor(sf::Color(128, 128, 128));
 
-    world = std::make_shared<b2World>(b2Vec2(0.f, -9.81f));
+    world = std::make_shared<b2World>(b2Vec2(0.f, -9.81f * 5));
     timeStep = 1.f / 60.f;
     velocityIterations = 8;
     positionIterations = 3;
@@ -42,6 +43,7 @@ PhysicsSandbox::PhysicsSandbox(Engine *engine) : engine(engine) {
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     bodyDef.position.Set(0.f, 20.f);
+    bodyDef.fixedRotation = true;
     body = world->CreateBody(&bodyDef);
 
     b2PolygonShape dynamicBox;
@@ -50,8 +52,7 @@ PhysicsSandbox::PhysicsSandbox(Engine *engine) : engine(engine) {
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
     fixtureDef.density = 1.f;
-    fixtureDef.friction = 0.3f;
-    fixtureDef.restitution = 0.1f;
+    fixtureDef.friction = 25.f;
 
     body->CreateFixture(&fixtureDef);
     
@@ -66,6 +67,8 @@ PhysicsSandbox::PhysicsSandbox(Engine *engine) : engine(engine) {
     aabb = body->GetFixtureList()[0].GetAABB(0);
     bodyRect.setSize(sf::Vector2f(aabb.GetExtents().x * 2 * b2DrawFactor, aabb.GetExtents().y * 2 * b2DrawFactor));
     bodyRect.setOrigin(sf::Vector2f(aabb.GetExtents().x * b2DrawFactor, aabb.GetExtents().y * b2DrawFactor));
+
+    accumulator = 0.f;
 }
 
 void PhysicsSandbox::update() {
@@ -75,11 +78,32 @@ void PhysicsSandbox::update() {
     }
 
     if (engine->wasKeyPressed(sf::Keyboard::Up) || engine->wasKeyPressed(sf::Keyboard::W))
-        body->ApplyLinearImpulse(b2Vec2(0, 50), body->GetWorldCenter(), true);
+        body->ApplyLinearImpulse(b2Vec2(0, 175), body->GetWorldCenter(), true);
 
-    sf::Time t = clock.getElapsedTime();
+    float vel = 0;
 
-    if (t.asSeconds() >= timeStep)
+    if (engine->isKeyDown(sf::Keyboard::Left) || engine->isKeyDown(sf::Keyboard::A))
+        vel += -20.f;
+
+    if (engine->isKeyDown(sf::Keyboard::Right) || engine->isKeyDown(sf::Keyboard::D))
+        vel += 20.f;
+
+    if (vel != 0) {
+        float dV = vel - body->GetLinearVelocity().x;
+        float impulse = body->GetMass() * dV;
+        body->ApplyLinearImpulse(b2Vec2(impulse, 0), body->GetWorldCenter(), true);
+    }
+    else {
+        body->ApplyForce(b2Vec2(2 * -Sign(body->GetLinearVelocity().x), 0), body->GetWorldCenter(), false);
+    }
+
+    engine->EchoScreen(0.01, body->GetLinearVelocity().x);
+
+    sf::Time t = clock.restart();
+
+    accumulator += t.asSeconds();
+
+    while (accumulator >= timeStep)
     {
         world->Step(timeStep, velocityIterations, positionIterations);
 
@@ -87,9 +111,12 @@ void PhysicsSandbox::update() {
         groundRect.setPosition(sf::Vector2f(position.x * b2DrawFactor, -position.y * b2DrawFactor));
         position = body->GetPosition();
         bodyRect.setPosition(sf::Vector2f(position.x * b2DrawFactor, -position.y * b2DrawFactor));
+        //Echo(body->GetLinearVelocity().y);
 
-        clock.restart();
+        accumulator -= timeStep;
     }
+
+    //Echo(dd.GetFlags());
 }
 
 void PhysicsSandbox::draw() {

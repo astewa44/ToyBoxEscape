@@ -5,6 +5,7 @@
 #ifndef TOYBOXESCAPE_PHYSICSSANDBOX_HPP
 #define TOYBOXESCAPE_PHYSICSSANDBOX_HPP
 
+#include "Entcom.hpp"
 #include "Engine.hpp"
 
 #include <sfml/Graphics.hpp>
@@ -36,6 +37,7 @@ private:
     float b2DrawFactor;
 
     sf::Clock clock;
+    float accumulator;
 
 public:
     PhysicsSandbox(Engine* engine);

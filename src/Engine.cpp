@@ -74,23 +74,18 @@ void Engine::updateDebugText(float time_step) {
 
 void Engine::drawDebugText() {
     sf::Text debugText;
-
     debugText.setFont(debugFont);
     debugText.setCharacterSize(20);
     debugText.setStyle(sf::Text::Bold);
+    debugText.setColor(sf::Color::Green);
 
     float lineSpace = debugFont.getLineSpacing(debugText.getCharacterSize());
-    int windowHeight = window.getSize().y;
-
     debugText.setOrigin(0, lineSpace);
 
-    for (int i = 0; i < debugMessages.size(); i++)
-    {
+    int windowHeight = window.getSize().y;
+
+    for (int i = 0; i < debugMessages.size(); i++) {
         debugText.setString(debugMessages[i].first);
-        if (debugMessages[i].second < 1)
-            debugText.setColor(sf::Color(0, 255, 0, sf::Uint8(debugMessages[i].second * 255)));
-        else
-            debugText.setColor(sf::Color(0, 255, 0));
         debugText.setPosition(0, windowHeight - i * lineSpace);
         window.draw(debugText);
     }

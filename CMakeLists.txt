@@ -9,6 +9,7 @@ find_package(Boost 1.57.0 REQUIRED)
 find_package(Box2D REQUIRED)
 find_package(jsoncpp REQUIRED)
 add_subdirectory(ginseng)
+add_subdirectory(raspberry)
 
 # NOTE: Should probably avoid using GLOB, but it's fine for now.
 file(GLOB_RECURSE toy_box_escape_SOURCES src/*)
@@ -26,6 +27,7 @@ target_link_libraries(lib_toy_box_escape ${SFML_LIBRARIES})
 target_link_libraries(lib_toy_box_escape ${BOX2D_LIBRARIES})
 target_link_libraries(lib_toy_box_escape jsoncpp)
 target_link_libraries(lib_toy_box_escape ginseng)
+target_link_libraries(lib_toy_box_escape raspberry)
 
 add_executable(toy_box_escape "src/Main.cpp")
 set_property(TARGET toy_box_escape PROPERTY CXX_STANDARD 14)
