@@ -42,7 +42,7 @@ PhysicsSandbox::PhysicsSandbox(Engine *engine) : engine(engine) {
 
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(0.f, 20.f);
+    bodyDef.position.Set(0.f, 2.f);
     bodyDef.fixedRotation = true;
     body = world->CreateBody(&bodyDef);
 
@@ -80,24 +80,32 @@ void PhysicsSandbox::update() {
     if (engine->wasKeyPressed(sf::Keyboard::Up) || engine->wasKeyPressed(sf::Keyboard::W))
         body->ApplyLinearImpulse(b2Vec2(0, 175), body->GetWorldCenter(), true);
 
-    float vel = 0;
+    b2Vec2 vel = body->GetLinearVelocity();
+    float dvel = 0;
 
     if (engine->isKeyDown(sf::Keyboard::Left) || engine->isKeyDown(sf::Keyboard::A))
-        vel += -20.f;
+        dvel -= 1;
 
     if (engine->isKeyDown(sf::Keyboard::Right) || engine->isKeyDown(sf::Keyboard::D))
-        vel += 20.f;
+        dvel += 1;
 
-    if (vel != 0) {
-        float dV = vel - body->GetLinearVelocity().x;
+    if (dvel < 0 && vel.x < -2)
+        dvel = -20.f;
+    else if (dvel > 0 && vel.x > 2)
+        dvel = 20.f;
+    else if (dvel < 0)
+        dvel = b2Max(vel.x - 0.1f, -20.f);
+    else if (dvel > 0)
+        dvel = b2Min(vel.x + 0.1f, 20.f);
+
+    if (dvel != 0) {
+        float dV = dvel - vel.x;
         float impulse = body->GetMass() * dV;
         body->ApplyLinearImpulse(b2Vec2(impulse, 0), body->GetWorldCenter(), true);
     }
     else {
-        body->ApplyForce(b2Vec2(2 * -Sign(body->GetLinearVelocity().x), 0), body->GetWorldCenter(), false);
+        //body->ApplyForce(b2Vec2(2 * -Sign(body->GetLinearVelocity().x), 0), body->GetWorldCenter(), false);
     }
-
-    engine->EchoScreen(0.01, body->GetLinearVelocity().x);
 
     sf::Time t = clock.restart();
 
@@ -111,7 +119,8 @@ void PhysicsSandbox::update() {
         groundRect.setPosition(sf::Vector2f(position.x * b2DrawFactor, -position.y * b2DrawFactor));
         position = body->GetPosition();
         bodyRect.setPosition(sf::Vector2f(position.x * b2DrawFactor, -position.y * b2DrawFactor));
-        //Echo(body->GetLinearVelocity().y);
+
+        engine->EchoScreen(timeStep * 5, vel.x);
 
         accumulator -= timeStep;
     }
