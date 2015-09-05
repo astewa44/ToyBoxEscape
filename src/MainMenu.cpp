@@ -4,6 +4,7 @@
 
 #include "MainMenu.hpp"
 #include "PhysicsSandbox.hpp"
+#include "GinsengSandbox.hpp"
 
 #include <iostream>
 #include <cstdio>
@@ -35,6 +36,7 @@ MainMenu::MainMenu(Engine *engine) : engine(engine) {
 
     items.emplace_back(make_pair("Blue Square", maker<BlueSquare>(engine)));
     items.emplace_back(make_pair("Physics Sandbox", maker<PhysicsSandbox>(engine)));
+    items.emplace_back(make_pair("Ginseng Sandbox", maker<GinsengSandbox>(engine)));
 }
 
 bool MainMenu::haltsUpdate() {
