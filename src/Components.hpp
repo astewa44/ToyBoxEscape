@@ -73,12 +73,28 @@ namespace Components
         {
             b2BodyDef bodyDef;
             bodyDef.type = b2_staticBody;
-            bodyDef.position.Set(x, y);
+            bodyDef.position.Set(x / 2.f, y / 2.f);
             Body = physicsWorld.World->CreateBody(&bodyDef);
 
             b2PolygonShape box;
             box.SetAsBox(w / 2.f, h / 2.f);
             Body->CreateFixture(&box, 0.f);
+        }
+    };
+
+    struct FootSensor
+    {
+        FootSensor(b2Body* body)
+        {
+            b2PolygonShape sensorShape;
+            sensorShape.SetAsBox(body->GetFixtureList()->GetAABB(0).GetExtents().x * 0.9f, 0.2f, b2Vec2(0.f, -body->GetFixtureList()->GetAABB(0).GetExtents().y), 0);
+
+            b2FixtureDef sensorFixtureDef;
+            sensorFixtureDef.shape = &sensorShape;
+            sensorFixtureDef.isSensor = true;
+            sensorFixtureDef.userData = new GroundSensor();
+
+            b2Fixture* sensorFixture = body->CreateFixture(&sensorFixtureDef);
         }
     };
 }

@@ -4,6 +4,7 @@
 
 #include "GinsengSandbox.hpp"
 #include "DebugDraw.hpp"
+#include "Ai.hpp"
 
 using namespace std;
 using namespace Components;
@@ -68,15 +69,21 @@ GinsengSandbox::GinsengSandbox(Engine *engine) : engine(engine)
 
     PhysicsWorld physicsWorld(b2Vec2(0.f, -9.81f * 8), 1.f / 60.f, 8, 3);
     physicsWorld.World->SetContactListener(new ContactListener());
-    DebugDraw* debugDraw = new DebugDraw(engine->window, 32.f);
+    DebugDraw* debugDraw = new DebugDraw(engine->window, 64.f);
     debugDraw->SetFlags(b2Draw::e_shapeBit);
     physicsWorld.World->SetDebugDraw(debugDraw);
     db.makeComponent(db.makeEntity(), physicsWorld);
 
-    db.makeComponent(db.makeEntity(), StaticBody(physicsWorld, 0.f, -1.f, 2.f , 1.f));
-    db.makeComponent(db.makeEntity(), DynamicBody(physicsWorld, 0.5f, 0.f, 1.f , 1.f));
-    db.makeComponent(db.makeEntity(), DynamicBody(physicsWorld, -0.5f, 0.f, 1.f , 1.f));
-    db.makeComponent(db.makeEntity(), DynamicBody(physicsWorld, 0.f, 1.f, 2.f , 1.f));
+    db.makeComponent(db.makeEntity(), StaticBody(physicsWorld, 0.f, -1.f, 20.f , 1.f));
+    db.makeComponent(db.makeEntity(), DynamicBody(physicsWorld, 0.5f, 0.5f, 1.f , 1.f));
+    db.makeComponent(db.makeEntity(), DynamicBody(physicsWorld, -0.5f, 0.5f, 1.f , 1.f));
+    db.makeComponent(db.makeEntity(), DynamicBody(physicsWorld, 0.f, 1.5f, 2.f , 1.f));
+
+    EntID player = db.makeEntity();
+    DynamicBody dynamicBody = DynamicBody(physicsWorld, 4.f, 0.9f, 1.f , 1.8f);
+    db.makeComponent(player, dynamicBody);
+    db.makeComponent(player, FootSensor(dynamicBody.Body));
+    db.makeComponent(player, AIComponent{PlayerAI(player)});
 }
 
 void GinsengSandbox::update()
@@ -93,6 +100,8 @@ void GinsengSandbox::update()
         PhysicsWorld& physicsWorld = std::get<1>(ent).data();
         physicsWorld.Update();
     }
+
+    update_ais(engine, db);
 }
 
 void GinsengSandbox::draw()
