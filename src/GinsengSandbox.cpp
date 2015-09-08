@@ -6,6 +6,9 @@
 #include "DebugDraw.hpp"
 #include "Ai.hpp"
 
+#include <chaiscript/chaiscript.hpp>
+#include <chaiscript/chaiscript_stdlib.hpp>
+
 using namespace std;
 using namespace Components;
 
@@ -59,9 +62,21 @@ class ContactListener : public b2ContactListener
     }
 };
 
+double GinsengSandbox::function(int i, double j)
+{
+    return i * j;
+}
 
 GinsengSandbox::GinsengSandbox(Engine *engine) : engine(engine)
 {
+    chaiscript::ChaiScript chai(chaiscript::Std_Lib::library());
+    chai.add(chaiscript::fun(&function), "function");
+
+    double d = chai.eval<double>("function(3, 4.75);");
+
+    engine->EchoScreen(5, d);
+    Echo(d);
+
     accumulator = 0.f;
 
     sf::Vector2u wSize = engine->window.getSize();

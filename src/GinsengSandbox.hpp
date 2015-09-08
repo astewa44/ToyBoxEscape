@@ -26,6 +26,7 @@ public:
     void draw();
     bool haltsUpdate() const { return true; }
     bool haltsDraw() const { return true; }
+    double function(int i, double j);
 };
 
 
