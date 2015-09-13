@@ -14,12 +14,16 @@ add_subdirectory(ChaiScript)
 
 get_directory_property(CHAI_VERSION DIRECTORY ChaiScript DEFINITION CHAI_VERSION)
 add_library(chaiscript INTERFACE)
+if (MINGW OR CYGWIN)
+    add_definitions(-O3)
+endif()
 
 # NOTE: Should probably avoid using GLOB, but it's fine for now.
 file(GLOB_RECURSE toy_box_escape_SOURCES src/*)
 list(REMOVE_ITEM toy_box_escape_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/Main.cpp")
 
 add_library(lib_toy_box_escape ${toy_box_escape_SOURCES})
+add_definitions(-O3)
 set_property(TARGET lib_toy_box_escape PROPERTY OUTPUT_NAME toy_box_escape)
 set_property(TARGET lib_toy_box_escape PROPERTY CXX_STANDARD 14)
 set_property(TARGET lib_toy_box_escape APPEND PROPERTY COMPILE_DEFINITIONS BOOST_NO_CXX11_VARIADIC_TEMPLATES)

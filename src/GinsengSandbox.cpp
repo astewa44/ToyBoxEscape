@@ -62,7 +62,7 @@ class ContactListener : public b2ContactListener
     }
 };
 
-double GinsengSandbox::function(int i, double j)
+double blarg(int i, double j)
 {
     return i * j;
 }
@@ -70,9 +70,9 @@ double GinsengSandbox::function(int i, double j)
 GinsengSandbox::GinsengSandbox(Engine *engine) : engine(engine)
 {
     chaiscript::ChaiScript chai(chaiscript::Std_Lib::library());
-    chai.add(chaiscript::fun(&function), "function");
+    chai.add(chaiscript::fun(&blarg), "honk");
 
-    double d = chai.eval<double>("function(3, 4.75);");
+    double d = chai.eval<double>("honk(3, 4.75);");
 
     engine->EchoScreen(5, d);
     Echo(d);
