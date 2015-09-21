@@ -5,12 +5,13 @@
 #include "GinsengSandbox.hpp"
 #include "DebugDraw.hpp"
 #include "Ai.hpp"
+#include "Components.hpp"
 
-#include <chaiscript/chaiscript.hpp>
-#include <chaiscript/chaiscript_stdlib.hpp>
+#include <chaiscript/utility/utility.hpp>
 
 using namespace std;
 using namespace Components;
+using namespace chaiscript;
 
 class ContactListener : public b2ContactListener
 {
@@ -62,20 +63,17 @@ class ContactListener : public b2ContactListener
     }
 };
 
-double blarg(int i, double j)
+GinsengSandbox::GinsengSandbox(Engine *engine) : engine(engine), chai(std::make_shared<ChaiScript>(Std_Lib::library()))
 {
-    return i * j;
-}
+    ModulePtr footSensorModule(new Module());
 
-GinsengSandbox::GinsengSandbox(Engine *engine) : engine(engine)
-{
-    chaiscript::ChaiScript chai(chaiscript::Std_Lib::library());
-    chai.add(chaiscript::fun(&blarg), "honk");
+    utility::add_class<FootSensor>(*footSensorModule,
+        "FootSensor",
+        {  },
+        { {fun(&FootSensor::OnGround), "OnGround"} }
+    );
 
-    double d = chai.eval<double>("honk(3, 4.75);");
-
-    engine->EchoScreen(5, d);
-    Echo(d);
+    chai->add(footSensorModule);
 
     accumulator = 0.f;
 
@@ -89,16 +87,13 @@ GinsengSandbox::GinsengSandbox(Engine *engine) : engine(engine)
     physicsWorld.World->SetDebugDraw(debugDraw);
     db.makeComponent(db.makeEntity(), physicsWorld);
 
-    db.makeComponent(db.makeEntity(), StaticBody(physicsWorld, 0.f, -1.f, 20.f , 1.f));
-    db.makeComponent(db.makeEntity(), DynamicBody(physicsWorld, 0.5f, 0.5f, 1.f , 1.f));
-    db.makeComponent(db.makeEntity(), DynamicBody(physicsWorld, -0.5f, 0.5f, 1.f , 1.f));
-    db.makeComponent(db.makeEntity(), DynamicBody(physicsWorld, 0.f, 1.5f, 2.f , 1.f));
+    loadLevel("data/scripts/level/test.json");
 
     EntID player = db.makeEntity();
-    DynamicBody dynamicBody = DynamicBody(physicsWorld, 4.f, 0.9f, 1.f , 1.8f);
-    db.makeComponent(player, dynamicBody);
-    db.makeComponent(player, FootSensor(dynamicBody.Body));
+    db.makeComponent(player, DynamicBody(physicsWorld, 4.f, 0.9f, 1.f , 1.8f));
+    db.makeComponent(player, FootSensor(player.get<DynamicBody>().data().Body));
     db.makeComponent(player, AIComponent{PlayerAI(player)});
+    chai->add(var(player.get<FootSensor>().data()), "foot");
 }
 
 void GinsengSandbox::update()
@@ -109,11 +104,15 @@ void GinsengSandbox::update()
         return;
     }
 
-    auto items = db.query<PhysicsWorld>();
-    for (auto& ent : items)
+    for (auto& ent : db.query<PhysicsWorld>())
     {
         PhysicsWorld& physicsWorld = std::get<1>(ent).data();
         physicsWorld.Update();
+    }
+
+    if (engine->wasKeyPressed(sf::Keyboard::Space))
+    {
+        chai->eval_file("data/scripts/test.chai");
     }
 
     update_ais(engine, db);
@@ -122,11 +121,43 @@ void GinsengSandbox::update()
 void GinsengSandbox::draw()
 {
     engine->window.setView(gridView);
-    auto items = db.query<PhysicsWorld>();
-    for (auto& ent : items)
+    for (auto& ent : db.query<PhysicsWorld>())
     {
         PhysicsWorld& physicsWorld = std::get<1>(ent).data();
         physicsWorld.World->DrawDebugData();
     }
     engine->window.setView(engine->window.getDefaultView());
+}
+
+void GinsengSandbox::loadLevel(string fname)
+{
+    Json::Value json;
+    std::ifstream file(fname.c_str());
+    file >> json;
+
+    load(json);
+}
+
+void GinsengSandbox::load(Json::Value json)
+{
+    for (auto& ent : db.query<PhysicsWorld>())
+    {
+        PhysicsWorld& physicsWorld = std::get<1>(ent).data();
+
+        for (auto& body : json["staticBodies"]) {
+            db.makeComponent(db.makeEntity(), StaticBody(physicsWorld,
+                                                         body["center"]["x"].asFloat(),
+                                                         body["center"]["y"].asFloat(),
+                                                         body["size"]["w"].asFloat(),
+                                                         body["size"]["h"].asFloat()));
+        }
+
+        for (auto& body : json["dynamicBodies"]) {
+            db.makeComponent(db.makeEntity(), DynamicBody(physicsWorld,
+                                                          body["center"]["x"].asFloat(),
+                                                          body["center"]["y"].asFloat(),
+                                                          body["size"]["w"].asFloat(),
+                                                          body["size"]["h"].asFloat()));
+        }
+    }
 }

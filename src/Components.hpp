@@ -84,6 +84,8 @@ namespace Components
 
     struct FootSensor
     {
+        b2Fixture* sensorFixture;
+
         FootSensor(b2Body* body)
         {
             b2PolygonShape sensorShape;
@@ -94,7 +96,13 @@ namespace Components
             sensorFixtureDef.isSensor = true;
             sensorFixtureDef.userData = new GroundSensor();
 
-            b2Fixture* sensorFixture = body->CreateFixture(&sensorFixtureDef);
+            sensorFixture = body->CreateFixture(&sensorFixtureDef);
+        }
+
+        bool OnGround()
+        {
+            GroundSensor* data = (GroundSensor*)sensorFixture->GetUserData();
+            return (data->numFootContacts > 0);
         }
     };
 }

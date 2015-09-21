@@ -31,15 +31,7 @@ void Components::PlayerAI::operator()(Engine* engine, DB &db, EntID me, Componen
 {
     b2Body* body = me.get<DynamicBody>().data().Body;
 
-    bool onGround = false;
-    for (b2Fixture* f = body->GetFixtureList(); f != NULL; f = f->GetNext()) {
-        void * userData = f->GetUserData();
-        if (userData != NULL) {
-            GroundSensor* data = (GroundSensor*)userData;
-            if (!strcmp(data->type, "GroundSensor"))
-                onGround = (data->numFootContacts > 0);
-        }
-    }
+    bool onGround = me.get<FootSensor>().data().OnGround();
 
     if (engine->wasKeyPressed(sf::Keyboard::Up) || engine->wasKeyPressed(sf::Keyboard::W)) {
         if (onGround) {
