@@ -1,1 +1,11 @@
-print(foot.OnGround());
+/*
+ if (isKeyDown("V"))      { print("isKeyDown(V)"); }
+ if (isKeyUp("B"))        { print("isKeyUp(B)"); }
+ if (wasKeyPressed("N"))  { print("wasKeyPressed(N)"); }
+ if (wasKeyReleased("M")) { print("wasKeyReleased(M)"); }
+ */
+
+ if (wasKeyPressed("Space")) {
+     var m = getMousePosition;
+     puts("("); puts(m().x); puts(", "); puts(m().y); puts(", "); puts(m().wheel); puts(")\n");
+ }

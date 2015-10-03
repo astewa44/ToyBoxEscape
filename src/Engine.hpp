@@ -15,6 +15,7 @@
 #include <iostream>
 #include <sstream>
 #include <utility>
+#include <unordered_map>
 
 class Engine {
     struct KeyState {
@@ -26,13 +27,14 @@ class Engine {
 		int last_pressed = -1;
 		int last_released = -1;
 	};
-
+public:
     struct MousePosition {
         int x;
         int y;
         int wheel = 0;
     };
 
+private:
     sf::Clock clock;
 
     int current_tick = 0;
@@ -63,6 +65,9 @@ class Engine {
         Expand(ss, tail...);
     }
 
+    std::unordered_map<std::string, sf::Keyboard::Key> sfKeyMap;
+    std::unordered_map<std::string, sf::Mouse::Button> sfButtonMap;
+
 public:
     Engine();
     void go();
@@ -79,11 +84,21 @@ public:
     bool isKeyUp(sf::Keyboard::Key key) const;
     bool wasKeyPressed(sf::Keyboard::Key key) const;
     bool wasKeyReleased(sf::Keyboard::Key key) const;
+
+    bool isKeyDown(const std::string key) const;
+    bool isKeyUp(const std::string key) const;
+    bool wasKeyPressed(const std::string key) const;
+    bool wasKeyReleased(const std::string key) const;
 	
 	bool isMouseButtonDown(sf::Mouse::Button button) const;
     bool isMouseButtonUp(sf::Mouse::Button button) const;
     bool wasMouseButtonPressed(sf::Mouse::Button button) const;
     bool wasMouseButtonReleased(sf::Mouse::Button button) const;
+
+    bool isMouseButtonDown(const std::string button) const;
+    bool isMouseButtonUp(const std::string button) const;
+    bool wasMouseButtonPressed(const std::string button) const;
+    bool wasMouseButtonReleased(const std::string button) const;
 
     const MousePosition& getMousePosition() const {
         return mousePosition;
