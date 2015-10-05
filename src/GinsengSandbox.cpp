@@ -7,6 +7,7 @@
 #include "Ai.hpp"
 #include "Components.hpp"
 
+#include <chaiscript/chaiscript.hpp>
 #include <chaiscript/utility/utility.hpp>
 
 using namespace std;
@@ -63,7 +64,7 @@ class ContactListener : public b2ContactListener
     }
 };
 
-GinsengSandbox::GinsengSandbox(Engine *engine) : engine(engine), chai(std::make_shared<ChaiScript>(Std_Lib::library()))
+GinsengSandbox::GinsengSandbox(Engine *engine) : engine(engine)
 {
     ModulePtr sensorModule(new Module());
 
@@ -73,30 +74,7 @@ GinsengSandbox::GinsengSandbox(Engine *engine) : engine(engine), chai(std::make_
         { {fun(&FootSensor::OnGround), "OnGround"} }
     );
 
-    chai->add(sensorModule);
-
-    ModulePtr engineModule(new Module());
-
-    engineModule->add(fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::isKeyDown), engine), "isKeyDown");
-    engineModule->add(fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::isKeyUp), engine), "isKeyUp");
-    engineModule->add(fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::wasKeyPressed), engine), "wasKeyPressed");
-    engineModule->add(fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::wasKeyReleased), engine), "wasKeyReleased");
-
-    engineModule->add(fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::isMouseButtonDown), engine), "isMouseButtonDown");
-    engineModule->add(fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::isMouseButtonUp), engine), "isMouseButtonUp");
-    engineModule->add(fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::wasMouseButtonPressed), engine), "wasMouseButtonPressed");
-    engineModule->add(fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::wasMouseButtonReleased), engine), "wasMouseButtonReleased");
-
-    engineModule->add(user_type<Engine::MousePosition>(), "MousePosition");
-    engineModule->add(fun(&Engine::MousePosition::x), "x");
-    engineModule->add(fun(&Engine::MousePosition::y), "y");
-    engineModule->add(fun(&Engine::MousePosition::wheel), "wheel");
-
-    engineModule->add(fun(&Engine::getMousePosition, engine), "getMousePosition");
-
-    chai->add(engineModule);
-
-    chai->add(var(engine), "engine");
+    engine->chai->add(sensorModule);
 
     accumulator = 0.f;
 
@@ -116,7 +94,7 @@ GinsengSandbox::GinsengSandbox(Engine *engine) : engine(engine), chai(std::make_
     db.makeComponent(player, DynamicBody(physicsWorld, 4.f, 0.9f, 1.f , 1.8f));
     db.makeComponent(player, FootSensor(player.get<DynamicBody>().data().Body));
     db.makeComponent(player, AIComponent{PlayerAI(player)});
-    chai->add(var(player.get<FootSensor>().data()), "foot");
+    engine->chai->add(var(player.get<FootSensor>().data()), "foot");
 }
 
 void GinsengSandbox::update()
@@ -133,7 +111,7 @@ void GinsengSandbox::update()
         physicsWorld.Update();
     }
 
-    chai->eval_file("data/scripts/test.chai");
+    engine->chai->eval_file("data/scripts/test.chai");
 
     update_ais(engine, db);
 }

@@ -9,8 +9,6 @@
 #include "Entcom.hpp"
 #include "Components.hpp"
 
-#include <chaiscript/chaiscript.hpp>
-#include <chaiscript/chaiscript_stdlib.hpp>
 #include <json/json.h>
 
 class GinsengSandbox {
@@ -23,8 +21,6 @@ private:
     float accumulator;
 
     sf::View gridView;
-
-    std::shared_ptr<chaiscript::ChaiScript> chai;
 
     void loadLevel(std::string fname);
     void load(Json::Value json);

@@ -11,11 +11,15 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
+#include <chaiscript/chaiscript.hpp>
+#include <chaiscript/chaiscript_stdlib.hpp>
+
 #include <vector>
 #include <iostream>
 #include <sstream>
 #include <utility>
 #include <unordered_map>
+#include <memory>
 
 class Engine {
     struct KeyState {
@@ -27,14 +31,13 @@ class Engine {
 		int last_pressed = -1;
 		int last_released = -1;
 	};
-public:
+
     struct MousePosition {
         int x;
         int y;
         int wheel = 0;
     };
 
-private:
     sf::Clock clock;
 
     int current_tick = 0;
@@ -111,6 +114,8 @@ public:
     sf::RenderWindow window;
 
     GameStateManager states;
+
+    std::unique_ptr<chaiscript::ChaiScript> chai;
 };
 
 

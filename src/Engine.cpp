@@ -8,7 +8,9 @@
 #include <string>
 #include <algorithm>
 
-Engine::Engine() {
+using namespace std;
+
+Engine::Engine() : chai(new chaiscript::ChaiScript(chaiscript::Std_Lib::library())), states(this) {
     window.create(sf::VideoMode(800,600),"Toy Box Escape");
     //window.setVerticalSyncEnabled(true);
     window.setKeyRepeatEnabled(false);
@@ -123,6 +125,24 @@ Engine::Engine() {
     sfButtonMap["Middle"] = sf::Mouse::Button::Middle;
     sfButtonMap["XButton1"] = sf::Mouse::Button::XButton1;
     sfButtonMap["XButton2"] = sf::Mouse::Button::XButton2;
+
+    chai->add(chaiscript::fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::isKeyDown), this), "isKeyDown");
+    chai->add(chaiscript::fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::isKeyUp), this), "isKeyUp");
+    chai->add(chaiscript::fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::wasKeyPressed), this), "wasKeyPressed");
+    chai->add(chaiscript::fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::wasKeyReleased), this), "wasKeyReleased");
+
+    chai->add(chaiscript::fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::isMouseButtonDown), this), "isMouseButtonDown");
+    chai->add(chaiscript::fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::isMouseButtonUp), this), "isMouseButtonUp");
+    chai->add(chaiscript::fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::wasMouseButtonPressed), this), "wasMouseButtonPressed");
+    chai->add(chaiscript::fun(static_cast<bool (Engine::*)(const std::string) const>(&Engine::wasMouseButtonReleased), this), "wasMouseButtonReleased");
+
+    chai->add(chaiscript::user_type<Engine::MousePosition>(), "MousePosition");
+    chai->add(chaiscript::fun(&Engine::MousePosition::x), "x");
+    chai->add(chaiscript::fun(&Engine::MousePosition::y), "y");
+    chai->add(chaiscript::fun(&Engine::MousePosition::wheel), "wheel");
+
+    chai->add(chaiscript::fun(&Engine::getMousePosition, this), "getMousePosition");
+
 }
 
 void Engine::go() {

@@ -4,13 +4,14 @@
 #include "Ranges.hpp"
 
 #include <raspberry/raspberry.hpp>
+#include <chaiscript/chaiscript.hpp>
 
 #include <utility>
 #include <vector>
 #include <memory>
 
 // Reflection stuff
-
+class Engine;
 namespace _detail_GameStateManager {
 
 // Concepts
@@ -41,8 +42,13 @@ using StateErasure = raspberry::Any<
  */
 class GameStateManager final
 {
+    Engine* engine;
+
     std::vector<StateErasure> states;
+    std::vector<chaiscript::ChaiScript::State> chaiStates;
+
 public:
+    GameStateManager(Engine* engine) : engine(engine) {}
 
     /**
      * Pushes a state onto the stack

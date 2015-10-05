@@ -1,17 +1,21 @@
 #include "GameStateManager.hpp"
 
 #include "Ranges.hpp"
+#include "Engine.hpp"
 
 namespace _detail_GameStateManager {
 
 void GameStateManager::push(StateErasure state)
 {
+    chaiStates.emplace_back(engine->chai->get_state());
     states.emplace_back(std::move(state));
 }
 
 void GameStateManager::pop()
 {
     states.pop_back();
+    engine->chai->set_state(chaiStates.back());
+    chaiStates.pop_back();
 }
 
 bool GameStateManager::empty()
