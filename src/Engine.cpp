@@ -189,6 +189,8 @@ void Engine::poll_events() {
                 mousePosition.y = event.mouseMove.y;
                 break;
         }
+
+        states.handleEvent(event);
     }
 }
 

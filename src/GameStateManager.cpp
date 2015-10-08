@@ -28,6 +28,19 @@ int GameStateManager::size()
     return states.size();
 }
 
+void GameStateManager::handleEvent(sf::Event event)
+{
+    for (auto& state : reverse(states))
+    {
+        bool halts = state.haltsHandleEvent();
+        state.handleEvent(event);
+        if (halts)
+        {
+            return;
+        }
+    }
+}
+
 void GameStateManager::update()
 {
     for (auto& state : reverse(states))

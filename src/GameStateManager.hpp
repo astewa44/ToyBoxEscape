@@ -5,6 +5,7 @@
 
 #include <raspberry/raspberry.hpp>
 #include <chaiscript/chaiscript.hpp>
+#include <sfml/Window/Event.hpp>
 
 #include <utility>
 #include <vector>
@@ -15,17 +16,20 @@ class Engine;
 namespace _detail_GameStateManager {
 
 // Concepts
-
+RASPBERRY_DECL_METHOD(has_haltsHandleEvent, haltsHandleEvent);
 RASPBERRY_DECL_METHOD(has_haltsUpdate, haltsUpdate);
 RASPBERRY_DECL_METHOD(has_haltsDraw, haltsDraw);
+RASPBERRY_DECL_METHOD(has_handleEvent, handleEvent);
 RASPBERRY_DECL_METHOD(has_update, update);
 RASPBERRY_DECL_METHOD(has_draw, draw);
 
 // Erasure Type
 
 using StateErasure = raspberry::Any<
+        has_haltsHandleEvent<bool()>,
         has_haltsUpdate<bool()>,
         has_haltsDraw<bool()>,
+        has_handleEvent<void(sf::Event)>,
         has_update<void()>,
         has_draw<void()>
 >;
@@ -70,6 +74,8 @@ public:
      * This function must not be called while update() or draw() is running.
      */
     void pop();
+
+    void handleEvent(sf::Event event);
 
     /**
      * Update states

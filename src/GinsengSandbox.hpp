@@ -27,8 +27,10 @@ private:
 
 public:
     GinsengSandbox(Engine* engine);
+    void handleEvent(sf::Event event) {}
     void update();
     void draw();
+    bool haltsHandleEvent() const { return true; }
     bool haltsUpdate() const { return true; }
     bool haltsDraw() const { return true; }
 };

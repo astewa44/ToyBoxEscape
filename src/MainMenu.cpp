@@ -5,6 +5,7 @@
 #include "MainMenu.hpp"
 #include "PhysicsSandbox.hpp"
 #include "GinsengSandbox.hpp"
+#include "SfguiSandbox.hpp"
 
 #include <iostream>
 #include <cstdio>
@@ -18,33 +19,13 @@ std::function<StateErasure()> maker(Ts... ts) {
 	};
 }
 
-// A simple test state. Replace ASAP.
-struct BlueSquare
-{
-    Engine* engine = nullptr;
-    sf::CircleShape square = sf::CircleShape(75);
-    BlueSquare(Engine* engine) : engine(engine) { square.setFillColor(sf::Color(255, 0, 0)); }
-    void update() { if (engine->wasKeyPressed(sf::Keyboard::Escape)) engine->states.pop(); }
-    void draw() { engine->window.draw(square); }
-    bool haltsUpdate() const { return true; }
-    bool haltsDraw() const { return false; }
-};
-
 MainMenu::MainMenu(Engine *engine) : engine(engine) {
     if (!optionFont.loadFromFile("data/OpenSans-Regular.ttf"))
         throw "Couldn't find 'data/OpenSans-Regular.ttf'";
 
-    items.emplace_back(make_pair("Blue Square", maker<BlueSquare>(engine)));
     items.emplace_back(make_pair("Physics Sandbox", maker<PhysicsSandbox>(engine)));
     items.emplace_back(make_pair("Ginseng Sandbox", maker<GinsengSandbox>(engine)));
-}
-
-bool MainMenu::haltsUpdate() {
-    return true;
-}
-
-bool MainMenu::haltsDraw() {
-    return true;
+    items.emplace_back(make_pair("SFGUI Sandbox", maker<SfguiSandbox>(engine)));
 }
 
 void MainMenu::update() {
@@ -88,6 +69,7 @@ void MainMenu::update() {
 }
 
 void MainMenu::draw() {
+    engine->window.clear(sf::Color(0, 128, 255));
     sf::Text optionText;
     optionText.setFont(optionFont);
     optionText.setCharacterSize(40);

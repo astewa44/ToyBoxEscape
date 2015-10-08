@@ -8,3 +8,6 @@
 [submodule "ChaiScript"]
 	path = ChaiScript
 	url = https://github.com/ChaiScript/ChaiScript.git
+[submodule "SFGUI"]
+	path = SFGUI
+	url = https://github.com/TankOs/SFGUI.git

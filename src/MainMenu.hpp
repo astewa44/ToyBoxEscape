@@ -23,8 +23,10 @@ class MainMenu {
 public:
 	MainMenu() = default;
     MainMenu(Engine *engine);
-    bool haltsUpdate();
-    bool haltsDraw();
+    bool haltsHandleEvent() { return true; }
+    bool haltsUpdate() { return true; }
+    bool haltsDraw() { return true; }
+    void handleEvent(sf::Event event) {}
     void update();
     void draw();
 };
