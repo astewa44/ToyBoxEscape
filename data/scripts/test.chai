@@ -5,7 +5,14 @@ if (wasKeyPressed("N"))  { print("wasKeyPressed(N)"); }
 if (wasKeyReleased("M")) { print("wasKeyReleased(M)"); }
 */
 
-if (wasKeyPressed("Space")) {
+
+if (wasKeyPressed("F1")) {
     var m = getMousePosition;
-    puts("("); puts(m().x); puts(", "); puts(m().y); puts(", "); puts(m().wheel); puts(")\n");
+    /*puts("mouseState: "); puts("("); puts(m().x); puts(", "); puts(m().y); puts(", "); puts(m().wheel); puts(")\n");*/
+    var ts = to_string;
+    print("mouseState: (" + ts(m().x) + ", " + ts(m().y) + ", " + ts(m().wheel) + ")");
+}
+
+if (wasKeyPressed("F2")) {
+    puts("onGround: "); puts(foot.OnGround()); puts("\n");
 }

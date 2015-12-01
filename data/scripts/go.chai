@@ -1,0 +1,18 @@
+class go {
+    var i;
+    def go() {
+        this.i = 0;
+    }
+
+    def update() {
+        ++this.i;
+    }
+
+    def draw() {
+        print(this.i);
+    }
+
+    def to_string() {
+        return "This is from go. i = " + to_string(i);
+    }
+};

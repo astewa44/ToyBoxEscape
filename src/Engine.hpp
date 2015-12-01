@@ -115,7 +115,7 @@ public:
 
     GameStateManager states;
 
-    std::unique_ptr<chaiscript::ChaiScript> chai;
+    std::shared_ptr<chaiscript::ChaiScript> chai;
 };
 
 

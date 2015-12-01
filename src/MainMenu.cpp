@@ -1,10 +1,17 @@
 //
 // Created by xxAtrain223 on 4/23/2015.
 //
+/*
 
+    ChaiGameObject go("data/scripts/go.chai");
+    go.init();
+    go.update();
+    go.draw();
+*/
 #include "MainMenu.hpp"
 #include "PhysicsSandbox.hpp"
 #include "GinsengSandbox.hpp"
+#include "ChaiscriptSandbox.hpp"
 
 #include <iostream>
 #include <cstdio>
@@ -37,6 +44,7 @@ MainMenu::MainMenu(Engine *engine) : engine(engine) {
     items.emplace_back(make_pair("Blue Square", maker<BlueSquare>(engine)));
     items.emplace_back(make_pair("Physics Sandbox", maker<PhysicsSandbox>(engine)));
     items.emplace_back(make_pair("Ginseng Sandbox", maker<GinsengSandbox>(engine)));
+    items.emplace_back(make_pair("Chaiscript Sandbox", maker<ChaiscriptSandbox>(engine)));
 }
 
 bool MainMenu::haltsUpdate() {
